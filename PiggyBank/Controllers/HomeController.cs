@@ -1,21 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PiggyBank.Models;
+using PiggyBank.Repositories;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace PiggyBank.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ICategoryRepository categoryRepository)
         {
             _logger = logger;
+            _categoryRepository = categoryRepository;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var categories = _categoryRepository.GetUserCategories(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            return View(categories);
         }
 
         public IActionResult Privacy()

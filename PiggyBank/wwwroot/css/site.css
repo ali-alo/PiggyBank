@@ -16,3 +16,7 @@ html {
   position: relative;
   min-height: 100%;
 }
+
+.on-hover-underline:hover {
+    text-decoration: underline;
+}

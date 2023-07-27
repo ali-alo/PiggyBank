@@ -1,17 +1,30 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity;
+@using PiggyBank.Data;
+@inject SignInManager<ApplicationUser> SignInManager
+
+@model IEnumerable<Category>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <h3>@User.Identity?.Name</h3>
-    <ul>
-        @foreach (var claim in User.Claims)
-        {
-            <li>@claim.Type <b>@claim.Value</b></li>
-        }
-    </ul>
-
-    <h3>@User.Identity</h3>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <h1 class="display-4 text-white">Вы вошли в аккаунт!</h1>
+        <p class="lead text-white">Tеперь вы можете использовать весь функционал приложения</p>
+        <div class="btn-group mt-4">
+            <a class="btn btn-lg btn-outline-light">Перейти к транзакциям</a>
+            <a class="btn btn-lg btn-outline-light">Посмотреть категории</a>
+        </div>
+    }
+    else
+    {
+        <h1 class="display-4 text-white">Вы не авторизированы.</h1>
+        <p class="lead text-white">Для использования приложения нужно зарегистрироваться.</p>
+        <div class="btn-group mt-4">
+            <a class="btn btn-outline-light" asp-area="Identity" asp-page="/Account/Register">Регистрация</a>
+            <a class="btn btn-outline-light" asp-area="Identity" asp-page="/Account/Login">Войти в аккаунт</a>
+        </div>
+    }
 </div>
