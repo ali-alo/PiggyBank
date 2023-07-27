@@ -3,7 +3,7 @@
     public interface ITransactionRepository
     {
         Task<Models.Transaction?> CreateAsync(Models.Transaction transaction);
-        Task<Models.Transaction?> FindTransactionAsync(int userId, int transactionId);
-        Task<ICollection<Models.Transaction?>> GetAllTransactionsAsync(int userId);
+        Task<Models.Transaction?> FindTransactionAsync(string userId, int transactionId);
+        Task<ICollection<Models.Transaction>> GetAllUserTransactionsAsync(string userId);
     }
 }

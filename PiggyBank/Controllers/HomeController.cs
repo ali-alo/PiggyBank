@@ -19,8 +19,7 @@ namespace PiggyBank.Controllers
 
         public IActionResult Index()
         {
-            var categories = _categoryRepository.GetUserCategories(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            return View(categories);
+            return View();
         }
 
         public IActionResult Privacy()

@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity;
+@using PiggyBank.Data;
+@inject SignInManager<ApplicationUser> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,6 +29,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark on-hover-underline" asp-area="" asp-controller="Home" asp-action="Privacy">О нас</a>
                         </li>
+
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item ms-auto">
+                                <a class="nav-link text-dark on-hover-underline" asp-area="" asp-controller="Category" asp-action="Index">Категории</a>
+                            </li>
+                            <li class="nav-item me-auto">
+                                <a class="nav-link text-dark on-hover-underline" asp-area="" asp-controller="Transaction" asp-action="Index">Транзакции</a>
+                            </li>
+                        }
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

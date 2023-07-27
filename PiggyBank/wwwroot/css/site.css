@@ -20,3 +20,13 @@ html {
 .on-hover-underline:hover {
     text-decoration: underline;
 }
+
+.nowrap {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+}
+
+.pointer {
+    cursor: pointer;
+}

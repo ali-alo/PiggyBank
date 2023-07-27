@@ -27,6 +27,7 @@ builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSe
 
 builder.Services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 var app = builder.Build();
 

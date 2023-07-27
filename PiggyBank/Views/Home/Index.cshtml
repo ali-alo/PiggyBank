@@ -2,8 +2,6 @@
 @using PiggyBank.Data;
 @inject SignInManager<ApplicationUser> SignInManager
 
-@model IEnumerable<Category>
-
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -14,8 +12,8 @@
         <h1 class="display-4 text-white">Вы вошли в аккаунт!</h1>
         <p class="lead text-white">Tеперь вы можете использовать весь функционал приложения</p>
         <div class="btn-group mt-4">
-            <a class="btn btn-lg btn-outline-light">Перейти к транзакциям</a>
-            <a class="btn btn-lg btn-outline-light">Посмотреть категории</a>
+            <a class="btn btn-lg btn-outline-light" asp-action="Index" asp-controller="Transaction">Перейти к транзакциям</a>
+            <a class="btn btn-lg btn-outline-light" asp-action="Index" asp-controller="Category">Посмотреть категории</a>
         </div>
     }
     else

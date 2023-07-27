@@ -1,0 +1,43 @@
+﻿@model CategoryCreateDto
+
+<div class="row bg-white p-4 rounded-2 g-2 gx-2 col-md-6 m-auto">
+    <h1 class="text-center center">Новая Категория</h1>
+    <h5 class="text-danger"> @ViewData["Error"]</h5>
+
+    <form method="post" asp-action="Create" asp-controller="Category">
+
+
+
+        <div class="form-floating mb-2">
+            <input asp-for="@Model.Name" class="form-control" autocomplete="username" aria-required="true" />
+            <label asp-for="@Model.Name" class="form-label"></label>
+            <span asp-validation-for="@Model.Name" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex">
+
+            <div class="form-check">
+                <input asp-for="@Model.IsIncome" class="form-check-input pointer" type="radio" id="income" value="@true">
+                <label class="form-check-label pointer" asp-for="@Model.IsIncome" for="income">
+                    Доход
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-square-fill text-success" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z" />
+                    </svg>
+                </label>
+            </div>
+            <div class="form-check ms-3">
+                <input asp-for="@Model.IsIncome" class="form-check-input pointer" type="radio" id="expense" value="@false" checked>
+                <label class="form-check-label pointer" asp-for="@Model.IsIncome" for="expense">
+                    Расход
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-square-fill text-danger" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z" />
+                    </svg>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-2 float-end">Добавить</button>
+
+    </form>
+
+</div>
