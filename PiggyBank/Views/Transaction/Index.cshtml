@@ -10,29 +10,48 @@
             </div>
         </div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Дата</th>
-                    <th scope="col">Категория</th>
-                    <th scope="col">Комментарий</th>
-                    <th scope="col">Сумма</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 1; i <= Model.Count; i++)
-                {
-                    <tr class="@(Model[i-1].IsIncome ? "table-success" : "table-danger")">
-                        <th scope="row">@i</th>
-                        <td>@Model[i-1].Time.ToLocalTime()</td>
-                        <td>@Model[i-1].Category.Name</td>
-                        <td>@Model[i-1].Comment</td>
-                        <td>@string.Format("{0:N0}", Model[i-1].Amount)</td>
+        @if (Model.Count == 0)
+        {
+            <p class="lead">Нет транзакций на данный момент</p>
+        }
+        else
+        {
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Дата</th>
+                        <th scope="col">Категория</th>
+                        <th scope="col">Комментарий</th>
+                        <th scope="col">Сумма</th>
+                        <th scope="col">Подробнее</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr class="@(Model[i].IsIncome ? "table-success" : "table-danger")">
+                            <th scope="row">@(i+1)</th>
+                            
+                                <td>@Model[i].Time.ToLocalTime()</td>
+                                <td>@Model[i].Category.Name</td>
+                                <td>@Model[i].Comment</td>
+                                <td>@string.Format("{0:N0}", Model[i].Amount)</td>
+                                <td class="text-center">
+                                    <a class="text-black text-decoration-none" asp-action="Edit" asp-controller="Transaction" asp-route-id="@Model[i].Id">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle text-primary" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                        </svg>
+                                    </a>
+                                </td>
+                        </tr>
+                            
+                    }
+                </tbody>
+            </table>
+        }
     </div>
 </div>
 

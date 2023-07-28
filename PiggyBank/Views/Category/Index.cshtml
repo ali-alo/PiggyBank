@@ -9,7 +9,7 @@
         <div class="col-md-4">
             @if (category.IsIncome)
             {
-                <a class="btn btn-outline-success px-2 w-100 nowrap" asp-action="Edit" asp-controller="Category" asp-route-id="@category.Id">
+                <a class="btn btn-outline-success px-2 w-100 nowrap" asp-action="Index" asp-controller="Transaction" asp-route-categoryId="@category.Id">
                     <p class="lead d-inline">
                         @category.Name
 
@@ -22,7 +22,7 @@
             }
             else
             {
-                <a class="btn btn-outline-danger px-2 w-100 nowrap" asp-action="Edit" asp-controller="Category" asp-route-id="@category.Id">
+                <a class="btn btn-outline-danger px-2 w-100 nowrap" asp-action="Index" asp-controller="Transaction" asp-route-categoryId="@category.Id">
                     <p class="lead d-inline">
                         @category.Name
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-square-fill text-danger" viewBox="0 0 16 16">
