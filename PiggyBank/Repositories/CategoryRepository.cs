@@ -33,10 +33,24 @@ namespace PiggyBank.Repositories
             return true;
         }
 
-        // double check if you really need this
         public ICollection<Category> GetUserCategories(string userId)
         {
             return _context.Categories.Where(c => c.Users.Any(u => u.Id == userId)).OrderByDescending(c => c.IsIncome).ThenBy(c => c.Name).ToList();
+        }
+
+        public ICollection<Category> GetUserIncomeCategories(string userId)
+        {
+            return _context.Categories.Where(c => c.Users.Any(u => u.Id == userId) && c.IsIncome).OrderBy(c => c.Name).ToList();
+        }
+
+        public ICollection<Category> GetUserExpenseCategories(string userId)
+        {
+            return _context.Categories.Where(c => c.Users.Any(u => u.Id == userId) && !c.IsIncome).OrderBy(c => c.Name).ToList();
+        }
+
+        public async Task<Category?> GetCategoryAsync(string userId, int categoryId)
+        {
+            return await _context.Categories.FirstOrDefaultAsync(c => c.Users.Any(u => u.Id == userId) && c.Id == categoryId);
         }
     }
 }

@@ -13,6 +13,6 @@ namespace PiggyBank.Models
         public decimal Amount { get; set; }
         public string? Comment { get; set; }
         public ApplicationUser User { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

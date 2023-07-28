@@ -2,6 +2,10 @@
 @using PiggyBank.Data;
 @inject SignInManager<ApplicationUser> SignInManager
 
+@{
+    var user = await SignInManager.UserManager.GetUserAsync(User);
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,14 +51,22 @@
         </nav>
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 position-relative">
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top pb-3 pt-2 text-muted bg-white">
-        <div class="container text-start">
-            &copy; 2023 - PiggyBank - <a asp-controller="Home" asp-action="Privacy" class="text-start">О нас</a>
+        <div class="container d-flex justify-content-between">
+            <div class="">
+                &copy; 2023 - PiggyBank - <a asp-controller="Home" asp-action="Privacy" class="text-start">О нас</a>
+            </div>
+            @if (user != null)
+            {
+                <div>
+                    <span class="fw-bold @(user.Balance < 0 ? "text-danger" : "text-success")">Ваш Баланс: @string.Format("{0:N0}", user.Balance) сум</span>
+                </div>
+            }
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

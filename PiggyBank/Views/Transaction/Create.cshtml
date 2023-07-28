@@ -1,0 +1,108 @@
+﻿@model TransactionCreationDto
+
+<div class="row bg-white p-4 rounded-2 g-2 gx-2 col-md-6 m-auto">
+
+    @if (Model.IsIncome)
+    {
+        <h1 class="text-center center">Новая Категория По Доходу</h1>
+    }
+    else
+    {
+        <h1 class="text-center center">Новая Категория По Расходу</h1>
+    }
+
+    <h5 class="text-danger"> @ViewData["Error"]</h5>
+
+    <form method="post" asp-action="Create" asp-controller="Transaction">
+
+
+        <div class="form-floating mb-2">
+            <input asp-for="@Model.Time" class="form-control">
+            <label asp-for="@Model.Time">Время <span class="text-danger form-label">*</span></label>
+            <span asp-validation-for="@Model.Time" class="text-danger"></span>
+        </div>
+
+
+        <div class="form-floating mb-2">
+            <select class="form-select pointer" asp-for="@Model.CategoryId">
+                <option selected value="-1">...</option>
+                @foreach (var category in Model.UserCategories)
+                {
+                    <option value="@category.Id" class="pointer">@category.Name</option>
+                }
+            </select>
+            <label asp-for="@Model.CategoryId" class="form-label">Категория <span class="text-danger form-label">*</span></label>
+            <span asp-validation-for="@Model.CategoryId" class="text-danger"></span>
+        </div>
+
+
+        <div class="row mb-2">
+            <label asp-for="@Model.Amount" class="form-label m-0">Сумма <span class="text-danger form-label">*</span></label>
+            <div class="col-sm-6">
+                <div class="input-group col-sm-6">
+                    @if (Model.IsIncome)
+                    {
+                        <span class="input-group-text bg-success text-white">+</span>
+                    }
+                    else
+                    {
+                        <span class="input-group-text bg-danger text-white">-</span>
+                    }
+
+                    <input type="number" class="form-control" asp-for="@Model.Amount" step="1000">
+                </div>
+            </div>
+
+            <div class="form-check col-sm-6">
+                <div class="float-end">
+                    @if (Model.IsIncome)
+                    {
+                        <input asp-for="@Model.IsIncome" class="form-check-input pointer" type="radio" id="income" value="@true" checked>
+                        <label class="form-check-label pointer" asp-for="@Model.IsIncome" for="income">
+                            Доход
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-square-fill text-success" viewBox="0 0 16 16">
+                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z" />
+                            </svg>
+                        </label>
+                    }
+                    else
+                    {
+                        <input asp-for="@Model.IsIncome" class="form-check-input pointer" type="radio" id="expense" value="@false" checked>
+                        <label class="form-check-label pointer" asp-for="@Model.IsIncome" for="income">
+                            Расход
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-square-fill text-danger" viewBox="0 0 16 16">
+                                <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0z" />
+                            </svg>
+                        </label>
+                    }
+
+                </div>
+            </div>
+
+            <span asp-validation-for="@Model.Amount" class="text-danger"></span>
+        </div>
+
+
+
+
+
+        @*        <div class="form-check ms-3">
+        <input asp-for="@Model.IsIncome" class="form-check-input pointer" type="radio" id="expense" value="@false">
+        <label class="form-check-label pointer" asp-for="@Model.IsIncome" for="expense">
+        Расход
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-square-fill text-danger" viewBox="0 0 16 16">
+        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0z" />
+        </svg>
+        </label>
+        </div>*@
+
+        <div class="form-floating mb-2">
+            <textarea class="form-control" asp-for="@Model.Comment" rows="3"></textarea>
+            <label asp-for="@Model.Comment" class="form-label">Комментарий</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-2 float-end">Добавить</button>
+
+    </form>
+
+</div>

@@ -1,9 +1,11 @@
-﻿namespace PiggyBank.Repositories
+﻿using PiggyBank.Models;
+
+namespace PiggyBank.Repositories
 {
     public interface ITransactionRepository
     {
-        Task<Models.Transaction?> CreateAsync(Models.Transaction transaction);
-        Task<Models.Transaction?> FindTransactionAsync(string userId, int transactionId);
-        Task<ICollection<Models.Transaction>> GetAllUserTransactionsAsync(string userId);
+        Task CreateAsync(Transaction transaction);
+        Task<Transaction?> FindTransactionAsync(string userId, int transactionId);
+        Task<IList<Transaction>> GetAllUserTransactionsAsync(string userId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using PiggyBank.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PiggyBank.Data;
 using PiggyBank.Models;
 
 namespace PiggyBank.Repositories
@@ -11,7 +12,7 @@ namespace PiggyBank.Repositories
         {
             _context = context;
         }
-        public void AddDefaultCategories(ApplicationUser user)
+        public async Task AddDefaultCategories(ApplicationUser user)
         {
             List<Category> categories = new List<Category>();
             for (int i = 1; i <= 10; i++)
@@ -21,7 +22,13 @@ namespace PiggyBank.Repositories
                     categories.Add(category);
             }
             user.Categories.AddRange(categories);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateBalance(ApplicationUser user, decimal amount)
+        {
+            user.Balance += amount;
+            await _context.SaveChangesAsync();
         }
     }
 }

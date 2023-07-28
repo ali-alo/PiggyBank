@@ -13,9 +13,10 @@ namespace PiggyBank.Repositories
             _context = context;
         }
 
-        public Task<Transaction?> CreateAsync(Transaction transaction)
+        public async Task CreateAsync(Transaction transaction)
         {
-            throw new NotImplementedException();
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
         }
 
         public Task<Transaction?> FindTransactionAsync(string userId, int transactionId)
@@ -23,9 +24,9 @@ namespace PiggyBank.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<ICollection<Transaction>> GetAllUserTransactionsAsync(string userId)
+        public async Task<IList<Transaction>> GetAllUserTransactionsAsync(string userId)
         {
-            var transactions = await _context.Transactions.Where(t => t.User.Id == userId).ToListAsync();
+            var transactions = await _context.Transactions.Include(t => t.Category).Where(t => t.User.Id == userId).OrderByDescending(t => t.Time).ToListAsync();
             if (!transactions.Any())
             {
                 return new List<Transaction>();
