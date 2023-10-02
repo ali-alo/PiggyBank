@@ -24,11 +24,5 @@ namespace PiggyBank.Repositories
             user.Categories.AddRange(categories);
             await _context.SaveChangesAsync();
         }
-
-        public async Task UpdateBalance(ApplicationUser user, decimal amount)
-        {
-            user.Balance += amount;
-            await _context.SaveChangesAsync();
-        }
     }
 }

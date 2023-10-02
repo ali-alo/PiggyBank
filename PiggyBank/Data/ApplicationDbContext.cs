@@ -7,9 +7,7 @@ namespace PiggyBank.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        [PersonalData]
         public DbSet<Transaction> Transactions { get; set; }
-        [PersonalData]
         public DbSet<Category> Categories { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -19,7 +17,13 @@ namespace PiggyBank.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Category>().HasData(
+            builder.Entity<Category>().HasData(GetDefaultCategories());
+        }
+
+        private List<Category> GetDefaultCategories()
+        {
+            return new List<Category>()
+            {
                 new Category
                 {
                     Id = 1,
@@ -80,7 +84,7 @@ namespace PiggyBank.Data
                     Name = "Другое",
                     IsIncome = false,
                 }
-            );
+            };
         }
     }
 }

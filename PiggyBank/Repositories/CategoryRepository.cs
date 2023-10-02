@@ -52,5 +52,35 @@ namespace PiggyBank.Repositories
         {
             return await _context.Categories.FirstOrDefaultAsync(c => c.Users.Any(u => u.Id == userId) && c.Id == categoryId);
         }
+
+        public async Task<bool> RemoveCategory(int categoryId, ApplicationUser user)
+        {
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
+            if (category == null)
+                return false;
+            await RemoveCategoryFromUser(category, user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        private async Task RemoveCategoryFromUser(Category category, ApplicationUser user)
+        {
+            var userCategoryTransactionIds = await GetCategoryTransactionIds(user.Id, category.Id);
+            user.Transactions.RemoveAll(t => userCategoryTransactionIds.Contains(t.Id));
+            user.Categories.Remove(category);
+        }
+
+        public async Task<int> GetCategoryTransactionsCount(string userId, int categoryId)
+        {
+            var count =  await _context.Transactions
+                .Include(t => t.Category)
+                .Where(t => t.User.Id == userId && t.Category.Id == categoryId)
+                .CountAsync();
+            return count;
+        }
+
+        private async Task<List<int>> GetCategoryTransactionIds(string userId, int categoryId) =>
+           await _context.Transactions
+                .Where(t => t.User.Id == userId && t.Category.Id == categoryId).Select(t => t.Id).ToListAsync();
     }
 }

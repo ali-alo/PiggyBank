@@ -14,17 +14,12 @@ namespace PiggyBank.Controllers
     public class TransactionController : Controller
     {
         private readonly ITransactionRepository _transactionRepository;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ICategoryRepository _categoryRepository;
-        private readonly IApplicationUserRepository _applicationUserRepository;
 
-        public TransactionController(ITransactionRepository transactionRepository, SignInManager<ApplicationUser> signInManager,
-                                     ICategoryRepository categoryRepository, IApplicationUserRepository applicationUserRepository)
+        public TransactionController(ITransactionRepository transactionRepository, ICategoryRepository categoryRepository)
         {
             _transactionRepository = transactionRepository;
-            _signInManager = signInManager;
             _categoryRepository = categoryRepository;
-            _applicationUserRepository = applicationUserRepository;
         }
 
         public async Task<IActionResult> Index([FromQuery] int? categoryId)
@@ -83,7 +78,6 @@ namespace PiggyBank.Controllers
                 };
 
                 await _transactionRepository.CreateAsync(transaction);
-                await _applicationUserRepository.UpdateBalance(await _signInManager.UserManager.GetUserAsync(User), transaction.Amount);
                 return RedirectToAction("Index", "Transaction");
             }
 
@@ -131,10 +125,6 @@ namespace PiggyBank.Controllers
                 return NotFound();
             }
 
-            // the logic to adjust the balance after changing the income/expense amount
-            decimal amountDifference = tr.IsIncome ? (transactionUpdateDto.Amount - tr.Amount) : (transactionUpdateDto.Amount - Math.Abs(tr.Amount)) * -1;
-            await _applicationUserRepository.UpdateBalance(await _signInManager.UserManager.GetUserAsync(User), amountDifference);
-
             tr.Id = transactionUpdateDto.Id;
             tr.Amount = transactionUpdateDto.Amount;
             tr.Time = transactionUpdateDto.Time;
@@ -152,11 +142,9 @@ namespace PiggyBank.Controllers
 
         public async Task<ActionResult> Delete(int id)
         {
-            var transaction = await _transactionRepository.FindTransactionAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
             bool success = await _transactionRepository.DeleteTransactionAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
             if (success)
             {
-                await _applicationUserRepository.UpdateBalance(await _signInManager.UserManager.GetUserAsync(User), transaction!.Amount * -1);
                 return RedirectToAction("Index");
             }
             return BadRequest();
