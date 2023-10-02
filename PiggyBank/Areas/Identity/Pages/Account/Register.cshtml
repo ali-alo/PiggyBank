@@ -1,7 +1,7 @@
 ﻿@page
 @model RegisterModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Регистрация";
 }
 
 <div class="row">
@@ -11,22 +11,24 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-floating mb-2">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" autofocus tabindex="1" />
                 <label asp-for="Input.Email"></label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
             <div class="form-floating mb-2">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" tabindex="2" />
                 <label asp-for="Input.Password">Пароль</label>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
             <div class="form-floating mb-2">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" tabindex="3" />
                 <label asp-for="Input.ConfirmPassword"></label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Зарегистрироваться</button>
-            <small class="mt-2 d-inline-block d-flex justify-content-center">Уже есть аккаунт?<a class="nav-link text-primary d-inline px-1 py-0 text-decoration-underline" asp-area="Identity" asp-page="/Account/Login"> Войдите здесь</a></small>
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary" tabindex="4">Зарегистрироваться</button>
+            <small class="mt-2 d-inline-block d-flex justify-content-center">Уже есть аккаунт?
+                <a class="text-primary d-inline px-1 py-0 text-decoration-underline" asp-area="Identity" asp-page="/Account/Login"> Войдите здесь</a>
+            </small>
         </form>
     </div>
 </div>

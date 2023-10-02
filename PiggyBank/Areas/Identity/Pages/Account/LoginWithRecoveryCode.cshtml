@@ -1,0 +1,31 @@
+﻿@page
+@model LoginWithRecoveryCodeModel
+@{
+    ViewData["Title"] = "Проверка кода восстановления";
+}
+
+<div class="m-auto bg-white rounded-2 p-3">
+    <h1>@ViewData["Title"]</h1>
+    <hr />
+    <p class="col-md-6">
+        Вы запросили вход с кодом восстановления. Этот логин не будет запомнен, пока вы не предоставите
+        код приложения для аутентификации при входе в систему или отключите 2FA и войдите снова.
+    </p>
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating">
+                    <input asp-for="Input.RecoveryCode" class="form-control" autocomplete="off" />
+                    <label asp-for="Input.RecoveryCode" class="form-label"></label>
+                    <span asp-validation-for="Input.RecoveryCode" class="text-danger"></span>
+                </div>
+                <button type="submit" class="w-100 btn btn-lg btn-primary mt-2">Авторизоваться</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

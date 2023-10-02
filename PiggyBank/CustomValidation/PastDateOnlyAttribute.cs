@@ -4,7 +4,7 @@ namespace PiggyBank.CustomValidation
 {
     public class PastDateOnlyAttribute : ValidationAttribute
     {
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
             DateTime? dateTime = (DateTime?)value;
             if (dateTime.HasValue)

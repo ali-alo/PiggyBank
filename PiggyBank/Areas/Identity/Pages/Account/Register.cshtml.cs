@@ -139,8 +139,8 @@ namespace PiggyBank.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Подтвердите регистрацию",
+                        $"Юху! Спасибо за регистрацию! <br>Пожалуйста подтвердите регистрацию на нашем сайте нажав по этой <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>ссылке</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
