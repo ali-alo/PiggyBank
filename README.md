@@ -1,9 +1,11 @@
 
 # PiggyBank - The app for tracking financial state
 
-***Disclaimer: this is not a commercial application; it is purely used to test skills and practise***
+***Disclaimer: this is not a commercial application; it is purely used to test skills and practise.***
 
-## The application has the following dependencies all in the latest 6.0.* verions
+***Click [here](https://piggy-bank-ali-alo.azurewebsites.net/) to go to the deployed website.***
+
+## The application has the following dependencies
 
 - `Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore`
 - `Microsoft.AspNetCore.Identity.EntityFrameworkCore`
@@ -13,6 +15,7 @@
 - `Microsoft.VisualStudio.Web.CodeGeneration.Design`
 - `Npgsql.EntityFrameworkCore.PostgreSQL`
 - `SendGrid`
+- `AutoMapper.Extensions.Microsoft.DependencyInjection`
 
 In addition, you need to have a [SendGrid](https://sendgrid.com/free/) account to use a cloud-based email marketing (email confirmation) and your API key, as well as [PostgreSQL](https://www.postgresql.org/download/) server available on your machine. You can learn how to generate a SendGrid API [here](https://docs.sendgrid.com/ui/sending-email/senders).
 
