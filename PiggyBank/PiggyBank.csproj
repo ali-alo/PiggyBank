@@ -8,13 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="NewFolder\**" />
     <Compile Remove="Repositories\Interfaces\**" />
-    <Content Remove="NewFolder\**" />
     <Content Remove="Repositories\Interfaces\**" />
-    <EmbeddedResource Remove="NewFolder\**" />
     <EmbeddedResource Remove="Repositories\Interfaces\**" />
-    <None Remove="NewFolder\**" />
     <None Remove="Repositories\Interfaces\**" />
   </ItemGroup>
 
@@ -29,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.19" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.19" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.19" />

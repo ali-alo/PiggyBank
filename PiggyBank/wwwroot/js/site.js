@@ -27,3 +27,20 @@ async function getUserBalance() {
         console.error("Error:", error);
     }
 }
+
+// code to format amount input
+const amountInput = document.getElementById('amountInput');
+
+if (amountInput) {
+    amountInput.addEventListener('input', function (e) {
+        const value = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+        const formattedValue = formatWithThousandsSeparator(value);
+        e.target.value = formattedValue;
+    });
+
+    function formatWithThousandsSeparator(value) {
+        return Number(value).toLocaleString('en-US');
+    }
+
+    amountInput.value = formatWithThousandsSeparator(amountInput.value);
+}

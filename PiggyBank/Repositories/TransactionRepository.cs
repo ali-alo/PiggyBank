@@ -46,13 +46,18 @@ namespace PiggyBank.Repositories
             return transactions;
         }
 
-        public async Task<bool> UpdateTransactionAsync(string userId, Transaction transactionUpdated)
+        public async Task<bool> UpdateTransactionAsync(string userId, TransactionUpdateDto dto)
         {
-            var transaction = await FindTransactionAsync(userId, transactionUpdated.Id);
-            if (transaction != null)
-            {
-                transaction = transactionUpdated;
-            }
+            var tr = await FindTransactionAsync(userId, dto.Id);
+            if (tr == null)
+                return false;
+
+            // update values
+            tr.Amount = dto.IsIncome ? dto.Amount : dto.Amount * -1;
+            tr.Comment = dto.Comment;
+            tr.CategoryId = dto.CategoryId;
+            tr.Time = dto.Time.ToUniversalTime();
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -61,13 +66,10 @@ namespace PiggyBank.Repositories
         {
             var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.UserId == userId && t.Id == transactionId);
             if (transaction == null)
-            {
                 return false;
-            }
             _context.Transactions.Remove(transaction);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
-
         }
     }
 }

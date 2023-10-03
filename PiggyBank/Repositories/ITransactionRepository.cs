@@ -1,4 +1,5 @@
-﻿using PiggyBank.Models;
+﻿using PiggyBank.DTOs;
+using PiggyBank.Models;
 
 namespace PiggyBank.Repositories
 {
@@ -8,7 +9,7 @@ namespace PiggyBank.Repositories
         Task<Transaction?> FindTransactionAsync(string userId, int transactionId);
         Task<IList<Transaction>> GetAllUserTransactionsAsync(string userId);
         Task<IList<Transaction>> GetAllUserTransactionsByCategoryAsync(string userId, int categoryId);
-        Task<bool> UpdateTransactionAsync(string userId, Transaction transactionUpdated);
+        Task<bool> UpdateTransactionAsync(string userId, TransactionUpdateDto dto);
         Task<bool> DeleteTransactionAsync(string userId, int transactionId);
     }
 }

@@ -7,8 +7,11 @@
 
     <h5 class="text-danger"> @ViewData["Error"]</h5>
 
-    <form method="post" asp-action="Edit" asp-controller="Transaction">
+    <form id="putForm">
 
+        <div id="validationErrors" class="text-danger"></div>
+
+        <input asp-for="@Model.Id" class="form-control visually-hidden" id="transactionId"/>
 
         <div class="form-floating mb-2">
             <input asp-for="@Model.Time" class="form-control">
@@ -42,7 +45,8 @@
                         <span class="input-group-text bg-danger text-white">-</span>
                     }
 
-                    <input type="number" class="form-control" asp-for="@Model.Amount" step="1000">
+                    <input type="text" class="form-control" asp-for="@Model.Amount" id="amountInput">
+
                 </div>
             </div>
 
@@ -81,10 +85,59 @@
         </div>
 
         <div class="btn-group mt-2">
-            <button type="submit" class="btn btn-primary">Изменить</button>
-            <a class="btn btn-danger" asp-action="Delete" asp-controller="Transaction" asp-route-id="@Model.Id">Удалить</a>
+            <button type="submit" class="btn btn-primary" id="submitButton">Изменить</button>
+            <button class="btn btn-danger" id="deleteButton">Удалить</button>
         </div>
 
     </form>
 
 </div>
+
+
+<script>
+    document.getElementById("submitButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        var formData = new FormData(document.getElementById("putForm"));
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", "/Transaction/Edit", true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                window.location.href = "/Transaction";
+            } else {
+                const validationErrors = JSON.parse(xhr.responseText);
+                const validationErrorsDiv = document.getElementById("validationErrors");
+                validationErrorsDiv.innerHTML = "Форма неверная:<br>";
+                for (const key in validationErrors) {
+                    if (validationErrors.hasOwnProperty(key)) {
+                        const errors = validationErrors[key];
+                        for (const error of errors) {
+                            validationErrorsDiv.innerHTML += `${error}<br>`;
+                        }
+                    }
+                }
+            }
+        };
+        xhr.send(formData);
+    });
+
+
+    function deleteTransaction(id) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "/Transaction/Delete/" + id, true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                window.location.href = "/Transaction";
+            } else {
+                console.error("Delete review request failed with status: " + xhr.status);
+            }
+        };
+        xhr.send();
+    }
+
+    document.getElementById("deleteButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        const id = document.getElementById('transactionId').value;
+        deleteTransaction(id);
+    });
+</script>
+

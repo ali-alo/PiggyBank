@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ActionConstraints;
-using PiggyBank.Data;
 using PiggyBank.DTOs;
 using PiggyBank.Models;
 using PiggyBank.Repositories;
@@ -15,140 +13,133 @@ namespace PiggyBank.Controllers
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
-        public TransactionController(ITransactionRepository transactionRepository, ICategoryRepository categoryRepository)
+        public TransactionController(ITransactionRepository transactionRepository, ICategoryRepository categoryRepository,
+            IMapper mapper)
         {
             _transactionRepository = transactionRepository;
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index([FromQuery] int? categoryId)
         {
             IList<Transaction> userTransactions;
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (categoryId != null)
-                userTransactions = await _transactionRepository.GetAllUserTransactionsByCategoryAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), categoryId.Value);
+                userTransactions = await _transactionRepository.GetAllUserTransactionsByCategoryAsync(userId, categoryId.Value);
             else
-                userTransactions = await _transactionRepository.GetAllUserTransactionsAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
+                userTransactions = await _transactionRepository.GetAllUserTransactionsAsync(userId);
             return View(userTransactions);
         }
 
-
+        [HttpGet]
         public ActionResult Create([FromQuery] bool isIncome)
         {
-            if (isIncome)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userCategories = GetRelevantCategories(userId, isIncome);
+
+            var transactionCreationDto = new TransactionCreationDto
             {
-                var userCategories = _categoryRepository.GetUserIncomeCategories(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                var transactionCreationDto = new TransactionCreationDto { IsIncome = true, UserCategories = userCategories };
-                return View(transactionCreationDto);
-            }
-            else
-            {
-                var userCategories = _categoryRepository.GetUserExpenseCategories(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                var transactionCreationDto = new TransactionCreationDto { IsIncome = false, UserCategories = userCategories };
-                return View(transactionCreationDto);
-            }
+                IsIncome = isIncome,
+                UserCategories = userCategories
+            };
+
+            return View(transactionCreationDto);
         }
 
         [HttpPost]
         public async Task<ActionResult> Create(TransactionCreationDto transactionCreationDto)
         {
-            if (ModelState.IsValid)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!ModelState.IsValid)
+                return ResubmitCreateForm(userId, transactionCreationDto);
+
+            var category = await _categoryRepository.GetCategoryAsync(userId, transactionCreationDto.CategoryId);
+            if (category == null)
             {
-                var category = await _categoryRepository.GetCategoryAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), transactionCreationDto.CategoryId);
-                if (category == null)
-                {
-                    ViewData["Error"] = "Неверная категория";
-                    return View(transactionCreationDto);
-                }
-
-                if (!transactionCreationDto.IsIncome)
-                {
-                    transactionCreationDto.Amount = transactionCreationDto.Amount * -1;
-                }
-
-                var transaction = new Transaction
-                {
-                    Amount = transactionCreationDto.Amount,
-                    Time = transactionCreationDto.Time.ToUniversalTime(),
-                    Category = category,
-                    IsIncome = transactionCreationDto.IsIncome,
-                    Comment = transactionCreationDto.Comment,
-                    UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                };
-
-                await _transactionRepository.CreateAsync(transaction);
-                return RedirectToAction("Index", "Transaction");
+                ModelState.AddModelError("", "Данной категории не существует. Пожалуйста попробуйте снова.");
+                return ResubmitCreateForm(userId, transactionCreationDto);
             }
 
-            var userCategories = _categoryRepository.GetUserIncomeCategories(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            transactionCreationDto.UserCategories = userCategories;
-            return View(transactionCreationDto);
+            Transaction transaction = CreationDtoToModel(userId, category, transactionCreationDto);
+            await _transactionRepository.CreateAsync(transaction);
+            return RedirectToAction("Index", "Transaction");
         }
 
+        private ActionResult ResubmitCreateForm(string userId, TransactionCreationDto dto)
+        {
+            var userCategories = GetRelevantCategories(userId, dto.IsIncome);
+            dto.UserCategories = userCategories;
+            return View(dto);
+        }
+
+        private Transaction CreationDtoToModel(string userId, Category category, TransactionCreationDto transactionCreationDto)
+        {
+            transactionCreationDto.Amount = ConvertToNegativeIfExpense(transactionCreationDto.Amount, transactionCreationDto.IsIncome);
+            transactionCreationDto.Time = transactionCreationDto.Time.ToUniversalTime();
+
+            var transaction = _mapper.Map<Transaction>(transactionCreationDto);
+            transaction.Category = category;
+            transaction.UserId = userId;
+            return transaction;
+        }
+
+        private decimal ConvertToNegativeIfExpense(decimal amount, bool isIncome)
+        {
+            if (!isIncome)
+                amount = amount * -1;
+            return amount;
+        }
+
+        [HttpGet]
         public async Task<ActionResult<Transaction>> Edit(int id)
         {
-            var transaction = await _transactionRepository.FindTransactionAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
-            var userCategories = _categoryRepository.GetUserIncomeCategories(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var transaction = await _transactionRepository.FindTransactionAsync(userId, id);
+
             if (transaction == null)
-            {
                 return NotFound();
-            }
 
-            var transactionUpdateDto = new TransactionUpdateDto
-            {
-                Id = transaction.Id,
-                Amount = transaction.Amount,
-                Time = transaction.Time,
-                Comment = transaction.Comment,
-                IsIncome = transaction.IsIncome,
-                CategoryId = transaction.CategoryId,
-                UserCategories = userCategories
-            };
-
-            return View(transactionUpdateDto);
+            var dto = _mapper.Map<TransactionUpdateDto>(transaction);
+            dto.UserCategories = GetRelevantCategories(userId, transaction.IsIncome);
+            dto.Amount = Math.Abs(dto.Amount);
+            return View(dto);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Edit(TransactionUpdateDto transactionUpdateDto)
+        private ICollection<Category> GetRelevantCategories(string userId, bool isIncome) =>
+            isIncome
+                ? _categoryRepository.GetUserIncomeCategories(userId)
+                : _categoryRepository.GetUserExpenseCategories(userId);
+
+        [HttpPut]
+        public async Task<ActionResult> Edit(TransactionUpdateDto dto)
         {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!ModelState.IsValid)
             {
-                var userCategories = _categoryRepository.GetUserIncomeCategories(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                transactionUpdateDto.UserCategories = userCategories;
-                return View(transactionUpdateDto);
+                var userCategories = GetRelevantCategories(userId, dto.IsIncome);
+                dto.UserCategories = userCategories;
+                return BadRequest(ModelState);
             }
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var tr = await _transactionRepository.FindTransactionAsync(userId, transactionUpdateDto.Id);
-            if (tr == null)
-            {
+
+
+            var result = await _transactionRepository.UpdateTransactionAsync(userId, dto);
+            if (!result)
                 return NotFound();
-            }
-
-            tr.Id = transactionUpdateDto.Id;
-            tr.Amount = transactionUpdateDto.Amount;
-            tr.Time = transactionUpdateDto.Time;
-            tr.Comment = transactionUpdateDto.Comment;
-            tr.IsIncome = transactionUpdateDto.IsIncome;
-            tr.CategoryId = transactionUpdateDto.CategoryId;
-            tr.UserId = userId;
-
-
-            await _transactionRepository.UpdateTransactionAsync(userId, tr);
-            return RedirectToAction("Index", "Transaction");
+            return Ok();
 
 
         }
 
+        [HttpDelete]
         public async Task<ActionResult> Delete(int id)
         {
-            bool success = await _transactionRepository.DeleteTransactionAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), id);
-            if (success)
-            {
-                return RedirectToAction("Index");
-            }
-            return BadRequest();
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            bool success = await _transactionRepository.DeleteTransactionAsync(userId, id);
+            return success ? Ok() : BadRequest();
         }
-
     }
 }
